@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>@{{ username }} Files System</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:#020005;color:#e5e7eb;font-family:'JetBrains Mono',monospace;min-height:100vh}
+    header{background:#06000c;border-bottom:3px solid #fbbf24;padding:12px 20px;display:flex;align-items:center;gap:12px}
+    .title{font-size:16px;font-weight:700;color:#fbbf24}
+    main{padding:20px;max-width:860px;margin:0 auto}
+    .project-block{background:#05000a;border:3px solid #1a0a2a;border-radius:10px;margin-bottom:16px;overflow:hidden}
+    .project-header{padding:10px 16px;border-bottom:2px solid #1a0a2a;display:flex;align-items:center;gap:10px;background:#0d0d0d}
+    .project-name{font-size:14px;font-weight:700;color:#fff}
+    .file-row{display:flex;align-items:center;gap:10px;padding:8px 16px;border-bottom:1px solid #0d0d0d}
+    .file-name{flex:1;font-size:12px;color:#9ca3af}
+  </style>
+</head>
+<body>
+  <header>
+    <a href="/admin" style="color:#fff;text-decoration:none;font-weight:bold">← BACK</a>
+    <div><div class="title">MANAGED STORAGE AUDIT FOR @{{ username }}</div></div>
+  </header>
+  <main>
+    {% for name, data in file_data.items() %}
+    <div class="project-block">
+      <div class="project-header">
+        <span class="project-name">{{ name.upper() }}</span>
+        <span style="color:#00ff41;font-size:11px;margin-left:auto">{{ data.config.status.upper() }}</span>
+      </div>
+      <div>
+        {% for f in data.files %}
+        <div class="file-row">
+          <span>📄</span>
+          <span class="file-name">{{ f.name }}</span>
+          <span style="color:#4b5563;font-size:11px">{{ '%.1f'|format(f.size/1024) }} KB</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </main>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Master Admin Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--ac:#fbbf24;--ac-lite:#fbbf2411}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:#020005;color:#e5e7eb;font-family:'JetBrains Mono',monospace;min-height:100vh}
+    header{background:#06000c;border-bottom:3px solid var(--ac);padding:12px 20px;display:flex;align-items:center;justify-content:between}
+    .logo-name{color:var(--ac);font-weight:700;font-size:16px;text-shadow:0 0 8px var(--ac)}
+    .header-right{display:flex;gap:8px}
+    .btn{padding:6px 12px;border-radius:6px;font-family:inherit;font-size:11px;cursor:pointer;border:2px solid;text-decoration:none;font-weight:bold;transition:all .2s}
+    .btn-ghost{border-color:#2a2a2a;color:#6b7280;background:transparent}
+    .btn-ghost:hover{border-color:var(--ac);color:var(--ac)}
+    .btn-ac{border-color:var(--ac);color:var(--ac);background:transparent}
+    .btn-ac:hover{background:var(--ac-lite);box-shadow:0 0 10px var(--ac)}
+    
+    .stats-bar{background:#05000a;border-bottom:2px solid #1a0a2a;padding:12px 20px;display:flex;gap:20px;flex-wrap:wrap}
+    .stat{text-align:center;flex:1;min-width:80px}
+    .stat-num{font-size:20px;font-weight:700;color:var(--ac)}
+    .stat-label{font-size:9px;color:#4b5563;letter-spacing:1px;margin-top:2px}
+    main{padding:16px;max-width:850px;margin:0 auto}
+    
+    .tabs{display:flex;gap:4px;background:#06000c;border:2px solid #1a0a2a;border-radius:8px;padding:4px;width:fit-content;margin-bottom:16px}
+    .tab{padding:8px 16px;border-radius:6px;border:none;font-family:inherit;font-size:12px;cursor:pointer;background:transparent;color:#6b7280;font-weight:bold}
+    .tab.active{background:#110022;color:var(--ac);border:1px solid var(--ac)}
+    .tab-panel{display:none}
+    .tab-panel.active{display:block}
+    
+    /* Premium All Pakes Module Design */
+    .pakes-container{background:#06000c;border:3px solid #00ff41;border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 0 20px rgba(0,255,65,0.15)}
+    .pakes-title{font-size:15px;color:#00ff41;font-weight:bold;margin-bottom:6px;text-shadow:0 0 8px #00ff41}
+    .pakes-desc{font-size:11px;color:#888;margin-bottom:14px}
+    .btn-allpakes{background:transparent;border:3px solid #00ff41;color:#00ff41;padding:12px 24px;font-size:14px;font-weight:bold;font-family:inherit;border-radius:8px;cursor:pointer;width:100%;letter-spacing:1px;transition:all .2s}
+    .btn-allpakes:hover{background:rgba(0,255,65,0.15);box-shadow:0 0 25px #00ff41}
+    
+    .card{background:#05000a;border:3px solid #1a0a2a;border-radius:10px;overflow:hidden;margin-bottom:14px}
+    .card-header{padding:10px 16px;border-bottom:2px solid #1a0a2a;font-size:11px;color:var(--ac);font-weight:bold}
+    .user-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #0d0d0d}
+    .user-name{font-size:14px;font-weight:700;color:#fff}
+    
+    .form-input{width:100%;padding:10px;background:#111;border:2px solid #2a2a2a;border-radius:8px;color:#fff;font-family:inherit;font-size:13px;outline:none;margin-bottom:12px}
+    .form-input:focus{border-color:var(--ac)}
+    #toast{position:fixed;bottom:20px;right:20px;background:#05000a;border:2px solid var(--ac);border-radius:8px;padding:12px 18px;font-size:13px;color:var(--ac);transform:translateY(80px);opacity:0;transition:all .3s;z-index:200}
+    #toast.show{transform:translateY(0);opacity:1}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-name">🛡️ ADVANCED SYSTEM CORE CONTROL PANEL</div>
+    <div class="header-right">
+      <a href="/dashboard" class="btn btn-ghost">↤ DASHBOARD VIEW</a>
+    </div>
+  </header>
+
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-num">{{ total_users }}</div><div class="stat-label">USERS</div></div>
+    <div class="stat"><div class="stat-num">{{ total_projects }}</div><div class="stat-label">BOT PROJECTS</div></div>
+    <div class="stat"><div class="stat-num" style="color:#00ff41">{{ running }}</div><div class="stat-label">ACTIVE RUNNING</div></div>
+    <div class="stat"><div class="stat-num" style="color:#38bdf8">{{ total_files }}</div><div class="stat-label">SYSTEM FILES</div></div>
+  </div>
+
+  <main>
+    <!-- VERY IMPORTANT: MASTER ONE-TAP PACKAGE INSTALLER (ALL PAKES BUTTON) -->
+    <div class="pakes-container">
+      <div class="pakes-title">📦 ALL PAKES MASTER DEPLOYER (ONE-TAP PACKAGES UPDATE)</div>
+      <div class="pakes-desc">এক চাপে টেলিগ্রাম বট ও পাইথন স্ক্রিপ্টের জন্য প্রয়োজনীয় সকল প্যাকেজ (Flask, Python-Telegram-Bot, Requests, Discord.py, Aiohttp ইত্যাদি) গ্লোবালি ব্যাকগ্রাউন্ডে সুপার ফাস্ট স্পীডে ইনস্টল ও আপডেট হয়ে যাবে।</div>
+      <button class="btn-allpakes" id="allPakesBtn" onclick="runAllPakes()">⚡ RUN ALL PAKES ONE-TAP DEPLOYMENT</button>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('users',this)">👬 USER ACCOUNTS</button>
+      <button class="tab" onclick="switchTab('system-settings',this)">⚙️ CUSTOMIZE SYSTEM & LOGINS</button>
+    </div>
+
+    <!-- USERS MANAGEMENT -->
+    <div id="tab-users" class="tab-panel active">
+      <div class="card">
+        <div class="card-header">REGISTERED SYSTEM USERS</div>
+        {% for u in users %}
+        <div class="user-row">
+          <div style="flex:1">
+            <div class="user-name">@{{ u.username }}</div>
+            <div style="font-size:11px;color:#6b7280">Projects: {{ u.projects }} | Active: {{ u.running }}</div>
+          </div>
+          <form action="/admin/user/{{ u.username }}/delete" method="POST" style="display:inline" onsubmit="return confirm('Wipe user data?')">
+            <button type="submit" class="btn" style="border-color:#ef4444;color:#ef4444">DELETE USER</button>
+          </form>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- MAIN SYSTEM PROFILE & PASSWORD CUSTOMIZATION TAB (As requested) -->
+    <div id="tab-system-settings" class="tab-panel">
+      <div class="card" style="padding:16px">
+        <div class="card-header" style="padding:0 0 10px 0;margin-bottom:12px">🎛️ CHANGE SITE NAME & LOGIN ROUTE ACCESS PASSWORDS</div>
+        <form action="/admin/save_master_settings" method="POST">
+          <label style="font-size:11px;color:var(--ac);font-weight:bold">WEBSITE SYSTEM DISPLAY NAME</label>
+          <input type="text" name="site_name" class="form-input" value="{{ settings.get('site_name', '—͞SᎻꫝᎮᎮƝ᥆ꤪꤨꤨ  𝐂𝚘𝙳𝒆𝚡') }}" required>
+          
+          <label style="font-size:11px;color:var(--ac);font-weight:bold">FRONTEND SYSTEM USER LOGIN PASSWORD (প্রথম লগইন পাসওয়ার্ড)</label>
+          <input type="password" name="user_password" class="form-input" placeholder="পাসওয়ার্ড পরিবর্তন করতে এখানে লিখুন (ফাঁকা রাখলে আগেরটাই থাকবে)">
+          
+          <label style="font-size:11px;color:var(--ac);font-weight:bold">SECURE BACKEND MASTER ADMIN PANEL PASSWORD</label>
+          <input type="password" name="admin_password" class="form-input" placeholder="অ্যাডমিন প্যানেল পাসওয়ার্ড বদলাতে এখানে নতুন পাসওয়ার্ড দিন">
+          
+          <button type="submit" class="btn btn-ac" style="width:100%;padding:10px;margin-top:10px">💾 APPLY WEB CORE RE-CONFIGURATION</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <div id="toast"></div>
+
+  <script>
+    function switchTab(name,el){
+      document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      document.getElementById('tab-'+name).classList.add('active');el.classList.add('active');
+    }
+    function toast(msg){
+      const t=document.getElementById('toast');t.textContent=msg;
+      t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);
+    }
+    async function runAllPakes(){
+      const btn=document.getElementById('allPakesBtn');
+      btn.disabled=True;btn.textContent='⚙️ INSTALLING SYSTEM PAKES IN BACKGROUND...';btn.style.borderColor='#fbbf24';btn.style.color='#fbbf24';
+      try{
+        const r=await fetch('/admin/install_all_pakes_global',{method:'POST'});
+        const d=await r.json();
+        if(d.success){toast('All premium telegram & server packages successfully configured!');}
+        else{toast('Package installation deployment initialized.');}
+      }catch(e){}
+      btn.disabled=false;btn.textContent='⚡ RUN ALL PAKES ONE-TAP DEPLOYMENT';btn.style.borderColor='#00ff41';btn.style.color='#00ff41';
+    }
+  </script>
+</body>
+</html>

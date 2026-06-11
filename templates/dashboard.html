@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ site_name or '—͞SᎻꫝᎮᎮƝ᥆ꤪꤨꤨ  𝐂𝚘𝙳𝚎𝚡' }} — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--ac:{{ theme_color or '#00ff41' }};--ac-dim:{{ theme_color or '#00ff41' }}88;--ac-lite:{{ theme_color or '#00ff41' }}11;}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:#030006;color:#e5e7eb;font-family:'JetBrains Mono',monospace;min-height:100vh}
+    header{background:#06000d;border-bottom:3px solid var(--ac);padding:8px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+    .logo{display:flex;align-items:center;gap:6px}
+    .logo-icon{font-size:18px;color:var(--ac)}
+    .logo-name{color:var(--ac);font-weight:700;font-size:18px;text-shadow:0 0 10px var(--ac)}
+    .header-stats{display:flex;gap:10px;font-size:10px;color:#fff;background:#110022;padding:4px 8px;border-radius:6px;border:1px solid var(--ac-dim)}
+    .header-right{display:flex;align-items:center;gap:8px}
+    .username{color:var(--ac);font-size:12px;font-weight:bold}
+    .btn{padding:5px 10px;border-radius:6px;font-family:inherit;font-size:11px;cursor:pointer;border:2px solid;transition:all .2s;text-decoration:none;font-weight:bold}
+    .btn-ac{border-color:var(--ac);color:var(--ac);background:transparent}
+    .btn-ac:hover{background:var(--ac-lite);box-shadow:0 0 10px var(--ac)}
+    main{padding:12px;max-width:680px;margin:0 auto}
+    
+    /* Creation form on top for immediate visibility */
+    .instant-create{background:#06000c;border:3px solid var(--ac);border-radius:10px;padding:12px;margin-bottom:16px;box-shadow:0 0 15px var(--ac-lite)}
+    .instant-title{font-size:12px;color:var(--ac);font-weight:bold;margin-bottom:8px;letter-spacing:1px}
+    .create-inline-form{display:flex;gap:8px;flex-wrap:wrap}
+    .inline-input{flex:1;min-width:140px;padding:8px;background:#111;border:2px solid var(--ac-dim);border-radius:6px;color:#fff;font-family:inherit;font-size:12px;outline:none}
+    .inline-input:focus{border-color:var(--ac)}
+    
+    .stats-summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+    .stat-card{background:#090014;border:2px solid var(--ac-dim);border-radius:8px;padding:10px;text-align:center}
+    .stat-num{font-size:24px;font-weight:700}
+    .stat-num.ac{color:var(--ac);text-shadow:0 0 10px var(--ac)}
+    .stat-label{font-size:9px;color:#6b7280;letter-spacing:1px;margin-top:2px}
+    
+    .server-card{background:#05000a;border:3px solid #1a0a2a;border-radius:10px;padding:14px;margin-bottom:12px;transition:all .2s}
+    .server-card.running{border-color:var(--ac);box-shadow:0 0 12px var(--ac-lite)}
+    .server-card.stopped{border-color:#ef4444;box-shadow:0 0 12px #ef444422}
+    .server-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+    .server-name{font-weight:700;font-size:14px;color:#fff}
+    .status-badge{padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;border:1px solid}
+    .status-badge.running{border-color:var(--ac);color:var(--ac)}
+    .status-badge.stopped{border-color:#ef4444;color:#ef4444}
+    .server-sub{font-size:11px;color:#6b7280;margin-bottom:10px}
+    
+    .actions{display:flex;gap:8px}
+    .action-btn{flex:1;height:34px;background:transparent;border-radius:6px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-family:inherit;border:2px solid;font-weight:bold}
+    .empty{text-align:center;padding:40px 20px;color:#4b5563;font-size:13px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <span class="logo-name">☰ {{ site_name or '—͞SᎻꫝᎮᎮƝ᥆ꤪꤨꤨ  𝐂𝚘𝙳𝒆𝚡' }}</span>
+    </div>
+    <div class="header-stats">
+      <span id="statCpu">C: --%</span>
+      <span id="statRam">R: --%</span>
+      <span id="statDisk">D: --%</span>
+    </div>
+    <div class="header-right">
+      <span class="username">@{{ username }}</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- Instant Create Box (Always visible at top) -->
+    <div class="instant-create">
+      <div class="instant-title">⚡ CREATE NEW SUPERFAST PROJECT</div>
+      <form action="/server/create" method="POST" class="create-inline-form">
+        <input class="inline-input" name="name" placeholder="Enter Bot / Project Name" required>
+        <select class="inline-input" name="runtime" style="max-width:120px">
+          <option value="python">Python</option>
+          <option value="node">Node.js</option>
+          <option value="static">Static Web</option>
+        </select>
+        <button type="submit" class="btn btn-ac" style="padding:0 16px">+ LAUNCH</button>
+      </form>
+    </div>
+
+    <div class="stats-summary">
+      <div class="stat-card"><div class="stat-num ac">{{ running }}</div><div class="stat-label">RUNNING</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:#fff">{{ total }}</div><div class="stat-label">TOTAL</div></div>
+    </div>
+
+    {% if servers %}
+      {% for name, cfg in servers.items() %}
+      <div class="server-card {{ cfg.status }}">
+        <div class="server-top">
+          <span class="server-name">{{ name.upper() }}</span>
+          <span class="status-badge {{ cfg.status }}">{{ cfg.status.upper() }}</span>
+        </div>
+        <div class="server-sub">Runtime: {{ cfg.runtime.upper() }} | Cmd: {{ cfg.exec_command or 'Auto Default' }}</div>
+        <div class="actions">
+          {% if cfg.status == 'running' %}
+          <form action="/server/{{ name }}/stop" method="POST" style="flex:1">
+            <button class="action-btn" style="border-color:#ef4444;color:#ef4444;width:100%" title="Stop Process">■ STOP</button>
+          </form>
+          {% else %}
+          <form action="/server/{{ name }}/start" method="POST" style="flex:1">
+            <button class="action-btn" style="border-color:var(--ac);color:var(--ac);width:100%" title="Start Process">▶ RUN</button>
+          </form>
+          {% endif %}
+          <a href="/server/{{ name }}" class="action-btn" style="border-color:#38bdf8;color:#38bdf8" title="Manage Files">👀 FILES / PANEL</a>
+          <form action="/server/delete/{{ name }}" method="POST" style="display:inline" onsubmit="return confirm('Delete {{ name }} entirely?')">
+            <button class="action-btn" style="border-color:#e11d48;color:#e11d48;padding:0 12px" title="Delete">🗑</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty">
+        <div>NO PROJECTS CREATED YET. USE THE BOX ABOVE TO LAUNCH ONE INSTANTLY!</div>
+      </div>
+    {% endif %}
+  </main>
+
+  <script>
+    async function fetchStats(){
+      try{
+        const r=await fetch('/api/stats');
+        const d=await r.json();
+        document.getElementById('statCpu').textContent='C: '+d.cpu.toFixed(0)+'%';
+        document.getElementById('statRam').textContent='R: '+d.ram.toFixed(0)+'%';
+        document.getElementById('statDisk').textContent='D: '+d.disk.toFixed(0)+'%';
+      }catch(e){}
+    }
+    fetchStats();
+    setInterval(fetchStats,4000);
+  </script>
+</body>
+</html>

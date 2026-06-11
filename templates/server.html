@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ server_name }} | Management</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--ac:{{ theme_color or '#00ff41' }};--ac-dim:{{ theme_color or '#00ff41' }}88;--ac-lite:{{ theme_color or '#00ff41' }}11;}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:#030006;color:#e5e7eb;font-family:'JetBrains Mono',monospace;min-height:100vh}
+    header{background:#06000d;border-bottom:3px solid var(--ac);padding:12px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50}
+    .back{background:transparent;border:2px solid #2a2a2a;color:#fff;width:36px;height:36px;border-radius:7px;cursor:pointer;font-size:16px;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-weight:bold}
+    .back:hover{border-color:var(--ac);color:var(--ac)}
+    .header-info{flex:1}
+    .server-title{font-size:18px;font-weight:700;color:#fff;margin-right:10px}
+    .status-badge{padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;border:2px solid}
+    .status-badge.running{border-color:var(--ac);color:var(--ac);box-shadow:0 0 8px var(--ac-lite)}
+    .status-badge.stopped{border-color:#ef4444;color:#ef4444}
+    .sub{font-size:11px;color:#6b7280;margin-top:2px}
+    .btn{padding:8px 14px;border-radius:8px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;border:2px solid;background:transparent;transition:all .2s}
+    .btn-ac{border-color:var(--ac);color:var(--ac)}
+    .btn-ac:hover{background:var(--ac-lite);box-shadow:0 0 10px var(--ac-dim)}
+    .btn-red{border-color:#ef4444;color:#ef4444}
+    .btn-red:hover{background:#ef444411}
+    main{padding:16px;max-width:720px;margin:0 auto}
+    
+    .tabs{display:flex;gap:4px;background:#06000c;border:2px solid #1a0a2a;border-radius:8px;padding:4px;width:fit-content;margin-bottom:16px}
+    .tab{padding:8px 16px;border-radius:6px;border:none;font-family:inherit;font-size:12px;cursor:pointer;background:transparent;color:#6b7280;font-weight:bold}
+    .tab.active{background:#110022;color:var(--ac);border:1px solid var(--ac-dim);text-shadow:0 0 5px var(--ac)}
+    .tab-panel{display:none}
+    .tab-panel.active{display:block}
+    
+    /* Execution Box style under custom configuration */
+    .execution-config-card{background:#06000c;border:3px solid var(--ac);border-radius:10px;padding:16px;margin-bottom:16px;box-shadow:0 0 15px var(--ac-lite)}
+    .config-label{font-size:11px;color:var(--ac);font-weight:700;display:block;margin-bottom:6px;letter-spacing:1px}
+    .config-input{width:100%;padding:10px;background:#111;border:2px solid var(--ac-dim);border-radius:8px;color:#fff;font-family:inherit;font-size:13px;outline:none;margin-bottom:10px}
+    
+    .upload-zone{border:3px dashed var(--ac-dim);border-radius:10px;padding:24px;text-align:center;cursor:pointer;background:#05000a;transition:all .2s;margin-bottom:14px}
+    .upload-zone:hover{border-color:var(--ac);background:var(--ac-lite)}
+    .upload-title{font-size:13px;font-weight:bold;color:#9ca3af}
+    
+    .card{background:#05000a;border:3px solid #1a0a2a;border-radius:10px;overflow:hidden}
+    .card-header{padding:10px 14px;border-bottom:2px solid #1a0a2a;font-size:11px;color:#6b7280;font-weight:bold}
+    .file-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #0d0d0d;font-size:12px}
+    .file-name{flex:1;color:#d1d5db}
+    .file-size{color:#4b5563;font-size:11px}
+    
+    .settings-card{background:#05000a;border:3px solid #1a0a2a;border-radius:10px;padding:16px;margin-bottom:14px}
+    .form-group{margin-bottom:14px}
+    .form-label{font-size:11px;color:#6b7280;display:block;margin-bottom:6px;font-weight:bold}
+    
+    pre.log-content{font-family:inherit;font-size:12px;color:var(--ac);padding:16px;min-height:300px;max-height:500px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;background:#05000a;border:2px solid var(--ac-dim);border-radius:10px}
+    
+    /* Auto-reset Section */
+    .reset-section{background:#090014;border:3px solid var(--ac);border-radius:10px;padding:16px;margin-top:16px}
+    .toggle-row{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+    .toggle-switch{width:52px;height:26px;border-radius:13px;background:#1a1a1a;border:2px solid #333;cursor:pointer;position:relative;transition:all .3s}
+    .toggle-switch.on{background:var(--ac);border-color:var(--ac)}
+    .toggle-dot{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#555;transition:all .3s}
+    .toggle-switch.on .toggle-dot{left:27px;background:#fff}
+    .time-inputs{display:none;gap:6px;margin-top:10px;flex-wrap:wrap}
+    .time-inputs.visible{display:flex}
+    .time-field{display:flex;flex-direction:column;gap:4px;min-width:65px;flex:1}
+    .time-field label{font-size:9px;color:#6b7280;font-weight:bold;text-align:center}
+    .time-field input{padding:6px;background:#111;border:2px solid #2a2a2a;border-radius:6px;color:#fff;text-align:center;font-size:12px;outline:none}
+    .time-field input:focus{border-color:var(--ac)}
+    #toast{position:fixed;bottom:20px;right:20px;background:#06000c;border:2px solid var(--ac);border-radius:8px;padding:12px 18px;font-size:13px;color:var(--ac);transform:translateY(80px);opacity:0;transition:all .3s;z-index:200;box-shadow:0 0 15px var(--ac)}
+    #toast.show{transform:translateY(0);opacity:1}
+  </style>
+</head>
+<body>
+  <header>
+    <a href="/dashboard" class="back">←</a>
+    <div class="header-info">
+      <div>
+        <span class="server-title">{{ server_name.upper() }}</span>
+        <span class="status-badge {{ config.status }}">{{ config.status.upper() }}</span>
+      </div>
+      <div class="sub">Engine: {{ config.runtime.upper() }} | Script Manager</div>
+    </div>
+    <div>
+      {% if config.status == 'running' %}
+      <button class="btn btn-red" onclick="stopServer()">■ STOP BOT</button>
+      {% else %}
+      <button class="btn btn-ac" onclick="startServer()">▶ START BOT</button>
+      {% endif %}
+    </div>
+  </header>
+
+  <main>
+    <!-- Execution Path Box Section Right Below Name Data (As requested) -->
+    <div class="execution-config-card">
+      <label class="config-label">📁 MAIN COMMAND / EXECUTION FILE (যেমন: python main.py বা python botly.py)</label>
+      <input type="text" id="execCommandInput" class="config-input" value="{{ config.get('exec_command','') }}" placeholder="python main.py">
+      <button class="btn btn-ac" onclick="saveExecCommand()">💾 SAVE COMMAND</button>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('files',this)">FILE MANAGER</button>
+      <button class="tab" onclick="switchTab('settings',this)">AUTO RESTART CONFIG</button>
+      <button class="tab" onclick="switchTab('logs',this)">LIVE TERMINAL LOGS</button>
+    </div>
+
+    <!-- FILES TAB -->
+    <div id="tab-files" class="tab-panel active">
+      <div class="upload-zone" onclick="document.getElementById('fi').click()">
+        <input type="file" id="fi" accept=".zip,.py,.js,.ts,.json,.txt" hidden onchange="handleUpload(this.files[0])">
+        <div class="upload-title" id="uploadTitle">⚡ CLICK OR DRAG TO UPLOAD ALL BOT FILES (.ZIP, .PY, .JS)</div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">{{ files|length }} FILE(S) DETECTED IN STORAGE</div>
+        {% if files %}
+          {% for f in files %}
+          <div class="file-row">
+            <span>{{ '📂' if f.type == 'dir' else '📄' }}</span>
+            <span class="file-name">{{ f.path }}</span>
+            {% if f.type == 'file' %}<span class="file-size">{{ '%.1f'|format(f.size/1024) }} KB</span>{% endif %}
+          </div>
+          {% endfor %}
+        {% else %}
+          <div style="text-align:center;padding:30px;color:#4b5563">No files uploaded yet. Upload your code files above.</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- SETTINGS / RESET TAB -->
+    <div id="tab-settings" class="tab-panel">
+      <div class="reset-section">
+        <div style="font-size:12px;color:var(--ac);font-weight:bold;margin-bottom:12px">⟳ AUTOMATIC RUNTIME RESTART SYSTEM</div>
+        <div class="toggle-row">
+          <div class="toggle-switch {% if config.get('auto_reset',{}).get('enabled') %}on{% endif %}" id="resetToggle" onclick="toggleReset()">
+            <div class="toggle-dot"></div>
+          </div>
+          <span style="font-size:13px;font-weight:bold;" id="resetLabel">AUTO RESET STATE</span>
+        </div>
+        
+        <div class="time-inputs {% if config.get('auto_reset',{}).get('enabled') %}visible{% endif %}" id="timeInputs">
+          <div class="time-field"><label>YEARS</label><input type="number" id="resetYears" min="0" value="{{ config.get('auto_reset',{}).get('years',0) }}"></div>
+          <div class="time-field"><label>DAYS</label><input type="number" id="resetDays" min="0" value="{{ config.get('auto_reset',{}).get('days',0) }}"></div>
+          <div class="time-field"><label>HOURS</label><input type="number" id="resetHours" min="0" max="23" value="{{ config.get('auto_reset',{}).get('hours',0) }}"></div>
+          <div class="time-field"><label>MINS</label><input type="number" id="resetMinutes" min="0" max="59" value="{{ config.get('auto_reset',{}).get('minutes',0) }}"></div>
+          <div class="time-field"><label>SECS</label><input type="number" id="resetSeconds" min="0" max="59" value="{{ config.get('auto_reset',{}).get('seconds',0) }}"></div>
+        </div>
+        <button class="btn btn-ac" style="margin-top:14px;width:100%" onclick="saveResetSettings()">SAVE AUTOMATIC RESTART INTERVAL</button>
+      </div>
+    </div>
+
+    <!-- LOGS TAB -->
+    <div id="tab-logs" class="tab-panel">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:11px;color:var(--ac)">● STREAMING LIVE TERMINAL</span>
+        <button class="btn btn-red" style="padding:2px 8px;font-size:10px" onclick="clearLogs()">CLEAR CONSOLE</button>
+      </div>
+      <pre class="log-content" id="logContent">Loading terminal response...</pre>
+    </div>
+  </main>
+
+  <div id="toast"></div>
+
+  <script>
+    const S='{{ server_name }}';
+    function toast(msg,isErr){
+      const t=document.getElementById('toast');t.textContent=msg;
+      t.style.borderColor=isErr?'#ef4444':'var(--ac)';
+      t.style.color=isErr?'#ef4444':'var(--ac)';
+      t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);
+    }
+    function switchTab(name,el){
+      document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      document.getElementById('tab-'+name).classList.add('active');el.classList.add('active');
+      if(name==='logs'){loadLogs();clearInterval(window.logInt);window.logInt=setInterval(loadLogs,2000);}
+      else{clearInterval(window.logInt);}
+    }
+    async function saveExecCommand(){
+      const cmd=document.getElementById('execCommandInput').value.strip or document.getElementById('execCommandInput').value;
+      const r=await fetch('/server/'+S+'/save_exec',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({exec_command:cmd})});
+      const d=await r.json();if(d.success){toast('Execution command updated successfully!');}
+    }
+    async function handleUpload(f){
+      if(!f)return;document.getElementById('uploadTitle').textContent='UPLOADING & EXTRACTING SCRIPT...';
+      const fd=new FormData();fd.append('file',f);
+      const r=await fetch('/server/'+S+'/upload',{method:'POST',body:fd});
+      const d=await r.json();document.getElementById('uploadTitle').textContent='⚡ CLICK OR DRAG TO UPLOAD ALL BOT FILES (.ZIP, .PY, .JS)';
+      if(d.success){toast('Files loaded! Server configuration updated.');setTimeout(()=>location.reload(),1000);}
+    }
+    async function startServer(){const r=await fetch('/server/'+S+'/start',{method:'POST'});const d=await r.json();if(d.success){toast('Process online!');location.reload();}}
+    async function stopServer(){const r=await fetch('/server/'+S+'/stop',{method:'POST'});const d=await r.json();if(d.success){toast('Process stopped.');location.reload();}}
+    async function loadLogs(){try{const r=await fetch('/server/'+S+'/logs');const d=await r.json();document.getElementById('logContent').textContent=d.logs or 'Console idle.';}catch(e){}}
+    async function clearLogs(){if(confirm('Clear console log file?')){await fetch('/server/'+S+'/logs/clear',{method:'POST'});document.getElementById('logContent').textContent='Console cleared.';}}
+    
+    let resetEnabled={{ 'true' if config.get('auto_reset',{}).get('enabled') else 'false' }};
+    function toggleReset(){
+      resetEnabled=!resetEnabled;
+      const tog=document.getElementById('resetToggle'),inputs=document.getElementById('timeInputs');
+      if(resetEnabled){tog.classList.add('on');inputs.classList.add('visible');}
+      else{tog.classList.remove('on');inputs.classList.remove('visible');}
+    }
+    async function saveResetSettings(){
+      const y=parseInt(document.getElementById('resetYears').value)||0;
+      const d=parseInt(document.getElementById('resetDays').value)||0;
+      const h=parseInt(document.getElementById('resetHours').value)||0;
+      const m=parseInt(document.getElementById('resetMinutes').value)||0;
+      const s=parseInt(document.getElementById('resetSeconds').value)||0;
+      await fetch('/server/'+S+'/auto-reset/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({enabled:resetEnabled,years:y,days:d,hours:h,minutes:m,seconds:s})});
+      toast('Auto restart interval saved!');
+    }
+  </script>
+</body>
+</html>
