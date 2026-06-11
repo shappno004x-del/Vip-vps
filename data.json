@@ -1,0 +1,12 @@
+{
+  "servers": {},
+  "users": {},
+  "settings": {
+    "site_name": "\u2014\u035eS\u13bb\uaadd\u13ae\u13ae\u019d\u1946\ua92a\ua928\ua928  \ud835\udc02\ud835\ude98\ud835\ude73\ud835\ude8e\ud835\udea1",
+    "maintenance": false,
+    "maintenance_msg": "System upgrading.",
+    "theme_color": "#00ff41",
+    "admin_password_hash": "40a0b70433ef861b7d76c107cfe801b254ed52275334f20528dab9d640ca514a",
+    "global_user_password_hash": "f1534392279bddbf9d43dde8701cb5be14b82f76ec6607bf8d6ad557f60f304e"
+  }
+}
